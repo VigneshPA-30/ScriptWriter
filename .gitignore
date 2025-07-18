@@ -1,0 +1,40 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+*.sqlite3
+*.db
+*.env
+.env*
+*.venv
+venv/
+
+# Jupyter Notebooks
+*.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Lock and package files
+uv.lock
+
+# Node/Frontend
+node_modules/
+
+# Misc
+*.bak
+*.swp
+*.tmp
+*.orig
