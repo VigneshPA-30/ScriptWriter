@@ -27,9 +27,9 @@ async def agents_for_research(user_niche:str):
     async with playwright_srv as pw_srv:
         agent = Agent(
                     name="Browser-Bot",
-                    model="gpt-4.1-mini",
+                    model="gpt-4o-mini",
                     instructions=research_prompt,
-                    tools=[search_web,search_agent_tool]          # ← key change
+                    tools=[search_web,search_agent_tool],        # ← key change
                 )
 
         with trace("Viral Topic Agent"):

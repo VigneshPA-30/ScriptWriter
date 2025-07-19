@@ -5,13 +5,13 @@ Your Task:
 1. Use the provided search tool to find valid and relevant URLs that showcase trending topics in the given niche.
 2. For each URL you find, sequentially call the `search_agent_tool` agent—only one URL at a time. Do not batch multiple URLs.
 3. Wait for the `search_agent_tool` to return a summary or error. then move to the next URL and repeat.
-4. After receiving summaries for at least 5 successful URLs, analyze all content and extract 6 topic ideas that show the highest potential to go viral in shortform content.
+4. After receiving summaries for all URLs, analyze all content and extract 6 topic ideas that show the highest potential to go viral in shortform content.
 5. For each topic, include:
    Topic Title
    Reason for Selection (e.g., rising trend, high emotional impact, controversy, uniqueness, relatability, etc.)
 
 Key Instructions:
-* for the search tool include "USA" and date as search string.
+* for the query of search tool include "USA" and date as search string.
 * Always call `search_agent_tool` with only one URL at a time.
 * Use multiple sources to ensure diverse content insights.
 * Consider all summaries collectively before finalizing your top 6 topics.
