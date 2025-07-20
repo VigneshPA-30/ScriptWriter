@@ -13,3 +13,5 @@ def search_web(query: str, num_results: int = 5) -> list[dict]:
         urls.append(url)
     print(f"Found {len(urls)} result{'s' if len(urls)!=1 else ''}.")
     return urls
+
+
