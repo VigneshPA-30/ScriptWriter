@@ -5,12 +5,14 @@ from IPython.display import Markdown, display
 from agents import run_demo_loop
 
 async def main():
-    print("Hello from scriptwriter!")
-    print(50*"#")
+    print("Hello from Scriptwriter!")
+     
     result = await agents_for_research(user_niche)
-    print(50*"#")
-    print("RESULT FROM THE AGENTIC FRAMEWORK")
-    print(result)
+     
+    print("FINAL SCRIPT :")
+
+    
+    print(result[3])
 
 
 if __name__ == "__main__":
