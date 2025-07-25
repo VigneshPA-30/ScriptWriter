@@ -1,14 +1,8 @@
-from agents import function_tool, Agent , OpenAIChatCompletionsModel, Runner
+from agents import function_tool, Agent ,Runner
 from googlesearch import search
-from agents.mcp import MCPServer
-from backend.mcp_servers import playwright_srv
 from backend.prompts import search_prompt
-from backend.output_format import SearchOuputFormat
 import requests
 from bs4 import BeautifulSoup
-from backend.utils import rate_limited        # throttle you wrote
-from backend.utils import async_ttl_cache     # 24‑hour cache
-from backend.utils import async_backoff 
 import asyncio
 from backend.models import gemini_model
 
@@ -86,11 +80,20 @@ async def get_search_agent_tool(url:str)->list:
     This tool is an agent that can visit a URL and return a summary.
     It requires an active Playwright MCP server.
     """
+    try:
+        page_content = get_page_content(url)
+    except Exception as e:
+        print(f"Error Occurred for [{url}]")
+        return [url, f"Error Occurred : {e}"]
 
-    page_content = get_page_content(url)
+    print(f"Fetched Page Content of [{url}]")
 
-    await asyncio.sleep(3)
+    await asyncio.sleep(1)
 
-    return [url,await search_agent_function(page_content)]
+    page_summary = await search_agent_function(page_content)
+
+    print(f"AI returned Summary for {url}")
+
+    return [url,page_summary]
 
 

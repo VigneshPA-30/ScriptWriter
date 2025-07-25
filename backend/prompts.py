@@ -14,7 +14,7 @@ Follow these instrucrions step by step:
 4. After receiving summaries or error for 5 URLs ( check your previous chat logs to see how many URLs are returned), 
     analyze all content and extract 6 topic ideas that show the highest potential to go viral in shortform content. do not reply with 5 topics I want 6 topics  
 5. For each topic, include:
-   Topic Title
+   Topic Title (Should focus on single item, rather than a broad coverage)
    Reason for Selection (e.g., rising trend, high emotional impact, controversy, uniqueness, relatability, etc.)
 
 
