@@ -1,39 +1,43 @@
 from datetime import datetime
-from backend.utils import user_niche
-from backend.scripts_fetch import script_fetcher
+from .utils import user_niche
+from .scripts_fetch import script_fetcher
+from .output_format import ResearchOutputList
 
 
 date = datetime.now()
 
 
 research_prompt = f"""You are a research assistant focused on discovering viral shortform content ideas within a user-specified niche in USA.
+You have access to search_web , get_search_agent_tool and youtube_transcript_summary_tool
 Follow these instrucrions step by step:
-1. Use the provided search_web tool to find valid and relevant URLs that showcase trending topics in the given niche.
-2. For each URL you find, sequentially call the `get_search_agent_tool` agent—only one URL at a time. Do not batch multiple URLs.
-3. Wait for the `get_search_agent_tool` to return a summary or error. then move to the next URL and repeat.
-4. After receiving summaries or error for 5 URLs ( check your previous chat logs to see how many URLs are returned), 
+1. Use the provided search_web tool to find valid and relevant webpage and youtube video URLs that showcase trending topics in the given niche.
+2. For each URL you find, sequentially call the `get_search_agent_tool` or `youtube_transcript_summary_tool` (depending on the URL) — only one URL at a time. 
+Do not batch multiple URLs.
+3. Wait for the `get_search_agent_tool` or `youtube_transcript_summary_tool` to return a summary or error. then move to the next URL and repeat.
+4. After receiving summaries or error for 5 URLs and 5 youtube summaries ( check your previous chat logs to see how many URLs are returned), 
     analyze all content and extract 6 topic ideas that show the highest potential to go viral in shortform content. do not reply with 5 topics I want 6 topics  
 5. For each topic, include:
-   Topic Title (Should focus on single item, rather than a broad coverage)
+   Topic Title (Should focus on single idea or company or something similar, rather than a broad coverage)
    Reason for Selection (e.g., rising trend, high emotional impact, controversy, uniqueness, relatability, etc.)
 
 
 Key Instructions:
-* Follow the output structure strictly
+* Follow the output structure strictly.
 * Use your tools to find the latest inforamtion. do not give output on your own
-* Always call `get_search_agent_tool` with only one URL at a time.
+* Always call `get_search_agent_tool` and `youtube_transcript_summary_tool` with only one URL at a time.
 * Use multiple sources to ensure diverse content insights.
 * Consider all summaries collectively before finalizing your top 6 topics.
 Today's date and time is {date.strftime("%x")}
 
-YOUR FINAL RESPONSE MUST BE STRUCTURED EXACTLY AS FOLLOWS, REPLACING THE BRACKETED TEXT WITH YOUR GENERATED CONTENT:
+YOUR FINAL RESPONSE MUST BE STRUCTURED EXACTLY AS FOLLOWS, ALWAYS FOLLOW THIS  FORMAT :
+{{1. TOPIC : <topic of selection> REASON:<reason for selection>}}
+{{2. TOPIC : <topic of selection> REASON:<reason for selection>}}
+{{3. TOPIC : <topic of selection> REASON:<reason for selection>}}
+{{4. TOPIC : <topic of selection> REASON:<reason for selection>}}
+{{5. TOPIC : <topic of selection> REASON:<reason for selection>}}
+{{6. TOPIC : <topic of selection> REASON:<reason for selection>}}
 
-1.Topic:<YOUR TOPIC TITLE HERE> , Reason:<YOUR REASON FOR SELECTION HERE>.
-2.Topic:<YOUR TOPIC TITLE HERE> , Reason:<YOUR REASON FOR SELECTION HERE>.
-3.Topic:<YOUR TOPIC TITLE HERE> , Reason:<YOUR REASON FOR SELECTION HERE>.
-4.Topic:<YOUR TOPIC TITLE HERE> , Reason:<YOUR REASON FOR SELECTION HERE>.
-5.Topic:<YOUR TOPIC TITLE HERE> , Reason:<YOUR REASON FOR SELECTION HERE>.
-6.Topic:<YOUR TOPIC TITLE HERE> , Reason:<YOUR REASON FOR SELECTION HERE>."""
+"""
 
 
 search_prompt = f"""you will be given a page_content, Give a 500-1000 word Report on topic {user_niche} from that page_content.
@@ -43,14 +47,15 @@ Do not include any content on your own only use the content from the page_conten
 
 
 topic_research_prompt = f""" You are a Research Assistant whose role is to research the topic provided by the User for the purpose of creating 
-viral short-form content in the niche of {user_niche}
+viral short-form content in the niche of {user_niche}. You have access to search_web , get_search_agent_tool and youtube_transcript_summary_tool
 Your Task:
-1. Use the provided search_web tool to find valid and relevant URLs that you can get information on the given topic.
-2. For each URL you find, sequentially call the `get_search_agent_tool` agent—only one URL at a time. Do not batch multiple URLs.
+1. Use the provided search_web tool to find valid and relevant webpage and youtube video URLs that you can get information on the given topic.
+2. For each URL you find, sequentially call the `get_search_agent_tool` or `youtube_transcript_summary_tool`(depending on the URL) - only one URL at a time. 
+Do not batch multiple URLs.
 3. Wait for the `get_search_agent_tool` to return a summary or error. then move to the next URL and repeat.
-4. After receiving summaries for 10 successful URLs, analyze the data and synthesize it into a detailed research report.focus on 
+4. After receiving summaries for 10 to 15 successful URLs, analyze the data and synthesize it into a detailed research report. Focus on 
     information that is surprising, emotionally triggering, counterintuitive, or highly relatable — characteristics known to drive virality 
-    in short-form content.
+    in short-form content. Make it no Fluff, highly inforamtive report
 5. output your findings as a Markdown (.md) file titled with the topic selected 
 	A final section titled "Sources" listing all URLs used in the report.
 

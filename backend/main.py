@@ -4,13 +4,13 @@ from pydantic import BaseModel
 import uvicorn
 
 # Import the refactored agent functions and Pydantic models
-from backend.agents import (
+from .agents import (
     get_topic_ideas,
     research_topic,
     generate_hook,
     generate_script,
 )
-from backend.output_format import ResearchOutputList
+from .output_format import ResearchOutputList
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -84,4 +84,3 @@ async def api_generate_script(request: ScriptRequest):
     """Takes a hook and a research report to generate a complete video script."""
     script = await generate_script(request.hook, request.research_report)
     return {"content": script}
-
