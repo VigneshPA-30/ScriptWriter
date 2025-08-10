@@ -21,19 +21,23 @@ app = FastAPI(
 
 # --- CORS Configuration ---
 # This is crucial for allowing your React frontend to communicate with the backend.
-# Replace the origins with the actual URL of your frontend.
 origins = [
-    "http://localhost:3000",  # Common for React dev server
+    "http://localhost:8001",  # Common for React dev server
     "http://localhost:5173",  # Common for Vite/React dev server
-    # Add other origins if needed
+    "http://localhost:3000",  # Another common React port
+    "http://127.0.0.1:5173",  # Vite local IP access
+    "http://127.0.0.1:8001",  # Local IP access
+    "http://127.0.0.1:3000",  # Local IP access
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "Accept"],
+    expose_headers=["*"],
+    max_age=600  # Cache preflight requests for 10 minutes
 )
 
 # --- Pydantic Models for Request Bodies ---
@@ -44,13 +48,16 @@ class NicheRequest(BaseModel):
 
 class TopicRequest(BaseModel):
     topic: str
+    is_auto: bool = False
 
 class HookRequest(BaseModel):
     research_report: str
+    is_auto: bool = False
 
 class ScriptRequest(BaseModel):
     hook: str
     research_report: str
+    is_auto: bool = False
 
 class TextResponse(BaseModel):
     content: str
@@ -71,7 +78,7 @@ async def api_get_topic_ideas(request: NicheRequest):
 async def api_research_topic(request: TopicRequest, topic_selected : int =0 ):
     """Takes a single topic and performs in-depth research, returning a detailed report."""
     report = await research_topic(request.topic, topic_selected)
-    return {"content": report}
+    return {"content":report}
 
 @app.post("/generate/hook", response_model=TextResponse, summary="Generate a Hook")
 async def api_generate_hook(request: HookRequest):
