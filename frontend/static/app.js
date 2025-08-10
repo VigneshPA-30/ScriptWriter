@@ -95,7 +95,6 @@ function renderNichePage(app) {
     input.className = 'niche-input';
     input.placeholder = 'Enter your niche...';
     input.value = state.niche;
-    input.oninput = e => { state.niche = e.target.value; };
     app.appendChild(input);
     
     // Go button
@@ -207,6 +206,10 @@ function renderNichePage(app) {
             console.error('Error in workflow:', error);
             alert('An error occurred. Please try again.');
         }
+    };
+    input.oninput = e => {
+        state.niche = e.target.value;
+        goBtn.disabled = !state.niche.trim();
     };
     app.appendChild(goBtn);
 }
