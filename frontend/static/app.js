@@ -6,7 +6,7 @@ const API_URL = 'http://127.0.0.1:8000'; // Backend API URL
 let state = {
     page: 0, // 0: niche, 1: find-topic, 2: topic-research, 3: hook-generation, 4: full-script
     niche: '',
-    auto: null, // null means no mode selected, true for auto, false for manual
+    auto: false, // manual by default
     topics: [],
     selectedTopic: null,
     research: '',
@@ -15,6 +15,7 @@ let state = {
     script: '',
     sources: [],
     enabled: [true, false, false, false, false],
+    loading: false,
 };
 
 function render() {
@@ -35,12 +36,6 @@ function render() {
         headingBtns.appendChild(btn);
     });
     header.appendChild(headingBtns);
-    // Sources button
-    const sourcesBtn = document.createElement('button');
-    sourcesBtn.className = 'sources-btn';
-    sourcesBtn.innerText = 'Sources';
-    sourcesBtn.onclick = () => alert('Sources: ' + (state.sources.length ? state.sources.join(', ') : 'None yet'));
-    header.appendChild(sourcesBtn);
     app.appendChild(header);
 
     // Main content
@@ -62,8 +57,11 @@ function render() {
     const nextBtn = document.createElement('button');
     nextBtn.className = 'page-btn';
     nextBtn.innerText = 'Next';
-    nextBtn.disabled = state.page === 4; // Only disable when on the last page
-    nextBtn.onclick = () => { if(state.page < 4) { state.page++; render(); } };
+    nextBtn.disabled = state.page === 4 || state.loading ||
+        (state.page === 1 && state.selectedTopic === null) ||
+        (state.page === 2 && !state.research) ||
+        (state.page === 3 && !state.hooks[0]);
+    nextBtn.onclick = () => handleNext();
     nav.appendChild(nextBtn);
     app.appendChild(nav);
 }
@@ -77,20 +75,14 @@ function headingLabel(h) {
 }
 
 function renderNichePage(app) {
-    // Mode selection message
-    const modeMsg = document.createElement('div');
-    modeMsg.className = 'mode-message';
-    modeMsg.innerText = state.auto === null ? 'Please select a mode to continue' : '';
-    app.appendChild(modeMsg);
-
     // Toggle group
     const toggle = document.createElement('div');
     toggle.className = 'toggle-group';
     const btn = document.createElement('button');
     btn.className = 'toggle-btn' + (state.auto ? ' selected' : '');
-    btn.onclick = () => { 
-        state.auto = !state.auto; 
-        render(); 
+    btn.onclick = () => {
+        state.auto = !state.auto;
+        render();
     };
     toggle.appendChild(btn);
     const label = document.createElement('span');
@@ -113,6 +105,9 @@ function renderNichePage(app) {
     goBtn.disabled = !state.niche.trim(); // Only disabled if no niche entered
     goBtn.onclick = async () => {
         try {
+            state.loading = true;
+            state.page = 1;
+            render();
             // 1. First get the topics
             const topicsResponse = await fetch(`${API_URL}/research/topics`, {
                 method: 'POST',
@@ -126,14 +121,19 @@ function renderNichePage(app) {
             });
             const topicsData = await topicsResponse.json();
             state.topics = topicsData.content.split('\n').filter(topic => topic.trim());
-            
+            state.loading = false;
+            render();
+
             if (state.auto) {
                 // In automatic mode, randomly select a topic
                 const randomIndex = Math.floor(Math.random() * state.topics.length);
                 const selectedTopic = state.topics[randomIndex];
                 state.selectedTopic = randomIndex;
-                
+
                 // 2. Get research for the randomly selected topic
+                state.loading = true;
+                state.page = 2;
+                render();
                 const researchResponse = await fetch(`${API_URL}/research/topic`, {
                     method: 'POST',
                     headers: {
@@ -142,7 +142,7 @@ function renderNichePage(app) {
                     },
                     mode: 'cors',
                     credentials: 'include',
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         topic: selectedTopic,
                         topic_selected: randomIndex,
                         is_auto: true
@@ -150,8 +150,14 @@ function renderNichePage(app) {
                 });
                 const researchData = await researchResponse.json();
                 state.research = researchData.research || researchData.content;
-                
+                state.sources = researchData.sources || [];
+                state.loading = false;
+                render();
+
                 // 3. Generate hook
+                state.loading = true;
+                state.page = 3;
+                render();
                 const hookResponse = await fetch(`${API_URL}/generate/hook`, {
                     method: 'POST',
                     headers: {
@@ -160,15 +166,20 @@ function renderNichePage(app) {
                     },
                     mode: 'cors',
                     credentials: 'include',
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         research_report: state.research,
-                        is_auto: true 
+                        is_auto: true
                     })
                 });
                 const hookData = await hookResponse.json();
                 state.hooks = [hookData.content];
-                
+                state.loading = false;
+                render();
+
                 // 4. Generate script
+                state.loading = true;
+                state.page = 4;
+                render();
                 const scriptResponse = await fetch(`${API_URL}/generate/script`, {
                     method: 'POST',
                     headers: {
@@ -177,23 +188,21 @@ function renderNichePage(app) {
                     },
                     mode: 'cors',
                     credentials: 'include',
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         hook: state.hooks[0],
                         research_report: state.research
                     })
                 });
                 const scriptData = await scriptResponse.json();
                 state.script = scriptData.content;
-                
+                state.loading = false;
                 // Enable all pages and navigate to the final script
                 state.enabled = [true, true, true, true, true];
-                state.page = 4;
+                render();
             } else {
                 // In manual mode, just enable the topic selection page
                 state.enabled[1] = true;
-                state.page = 1;
             }
-            render();
         } catch (error) {
             console.error('Error in workflow:', error);
             alert('An error occurred. Please try again.');
@@ -203,6 +212,14 @@ function renderNichePage(app) {
 }
 
 function renderFindTopicPage(app) {
+    if (state.loading) {
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        loading.innerText = 'Loading...';
+        app.appendChild(loading);
+        return;
+    }
+
     // Topic buttons
     const boxBtns = document.createElement('div');
     boxBtns.className = 'box-btns';
@@ -210,43 +227,9 @@ function renderFindTopicPage(app) {
         const btn = document.createElement('button');
         btn.className = 'box-btn' + (state.selectedTopic === i ? ' selected' : '');
         btn.innerText = topic;
-        btn.onclick = async () => {
-            if (state.auto) {
-                // In automatic mode, don't do anything as everything is already handled
-                return;
-            }
-            
+        btn.onclick = () => {
             state.selectedTopic = i;
-            try {
-                // Show loading state
-                btn.disabled = true;
-                btn.innerText = 'Loading...';
-                
-                const response = await fetch(`${API_URL}/research/topic`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    mode: 'cors',
-                    credentials: 'include',
-                    body: JSON.stringify({ 
-                        topic: topic,
-                        topic_selected: i,
-                        is_auto: false
-                    })
-                });
-                const data = await response.json();
-                
-                // Enable research page
-                state.research = data.research || data.content;
-                state.enabled[2] = true;
-                state.page = 2; // Go to research page in manual mode
-                render();
-            } catch (error) {
-                console.error('Error fetching research:', error);
-                alert('Failed to fetch research. Please try again.');
-            }
+            render();
         };
         boxBtns.appendChild(btn);
     });
@@ -254,91 +237,137 @@ function renderFindTopicPage(app) {
 }
 
 function renderTopicResearchPage(app) {
+    if (state.loading) {
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        loading.innerText = 'Loading...';
+        app.appendChild(loading);
+        return;
+    }
+
     // Scrollable text
     const scroll = document.createElement('div');
     scroll.className = 'scrollable-text';
     scroll.innerText = state.research || 'Select a topic to see research.';
     app.appendChild(scroll);
-    
-    // Enable next when research is available
-    if(state.research) {
-        state.enabled[3] = true;
-        // If hook hasn't been generated yet, do it when moving to next page
-        if (!state.hooks.length) {
-            const generateHook = async () => {
-                try {
-                    const response = await fetch(`${API_URL}/generate/hook`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        mode: 'cors',
-                        credentials: 'include',
-                        body: JSON.stringify({ 
-                        research_report: state.research,
-                        is_auto: state.auto 
-                    })
-                    });
-                    const data = await response.json();
-                    state.hooks = [data.content]; // Store the generated hook
-                    render();
-                } catch (error) {
-                    console.error('Error generating hook:', error);
-                    alert('Failed to generate hook. Please try again.');
-                }
-            };
-            generateHook();
-        }
-    }
+
+    const sourcesBtn = document.createElement('button');
+    sourcesBtn.className = 'sources-btn';
+    sourcesBtn.innerText = 'Sources';
+    sourcesBtn.onclick = () => alert('Sources: ' + (state.sources.length ? state.sources.join(', ') : 'None yet'));
+    app.appendChild(sourcesBtn);
 }
 
 function renderHookGenerationPage(app) {
+    if (state.loading) {
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        loading.innerText = 'Loading...';
+        app.appendChild(loading);
+        return;
+    }
+
     // Display generated hook
     const scroll = document.createElement('div');
     scroll.className = 'scrollable-text';
-    scroll.innerText = state.hooks[0] || 'Generating hook...';
+    scroll.innerText = state.hooks[0] || 'No hook yet.';
     app.appendChild(scroll);
-
-    // Enable next if hook is generated
-    if(state.hooks[0]) {
-        state.enabled[4] = true;
-        // If script hasn't been generated yet, do it when moving to next page
-        if (!state.script) {
-            const generateScript = async () => {
-                try {
-                    const response = await fetch(`${API_URL}/generate/script`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        mode: 'cors',
-                        credentials: 'include',
-                        body: JSON.stringify({ 
-                            hook: state.hooks[0],
-                            research_report: state.research
-                        })
-                    });
-                    const data = await response.json();
-                    state.script = data.content;
-                    render();
-                } catch (error) {
-                    console.error('Error generating script:', error);
-                    alert('Failed to generate script. Please try again.');
-                }
-            };
-            generateScript();
-        }
-    }
 }
 
 function renderFullScriptPage(app) {
+    if (state.loading) {
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        loading.innerText = 'Loading...';
+        app.appendChild(loading);
+        return;
+    }
+
     // Scrollable text
     const scroll = document.createElement('div');
     scroll.className = 'scrollable-text';
     scroll.innerText = state.script || 'Select a hook to generate the script.';
     app.appendChild(scroll);
+}
+
+async function handleNext() {
+    try {
+        if (state.page === 1 && state.selectedTopic !== null) {
+            state.loading = true;
+            state.page = 2;
+            render();
+            const topic = state.topics[state.selectedTopic];
+            const response = await fetch(`${API_URL}/research/topic`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    topic: topic,
+                    topic_selected: state.selectedTopic,
+                    is_auto: false
+                })
+            });
+            const data = await response.json();
+            state.research = data.research || data.content;
+            state.sources = data.sources || [];
+            state.loading = false;
+            render();
+        } else if (state.page === 2 && state.research) {
+            state.loading = true;
+            state.page = 3;
+            render();
+            const response = await fetch(`${API_URL}/generate/hook`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    research_report: state.research,
+                    is_auto: state.auto
+                })
+            });
+            const data = await response.json();
+            state.hooks = [data.content];
+            state.loading = false;
+            render();
+        } else if (state.page === 3 && state.hooks[0]) {
+            state.loading = true;
+            state.page = 4;
+            render();
+            const response = await fetch(`${API_URL}/generate/script`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    hook: state.hooks[0],
+                    research_report: state.research
+                })
+            });
+            const data = await response.json();
+            state.script = data.content;
+            state.loading = false;
+            render();
+        } else if (state.page < 4) {
+            state.page++;
+            render();
+        }
+    } catch (error) {
+        console.error('Error in navigation workflow:', error);
+        alert('An error occurred. Please try again.');
+        state.loading = false;
+        render();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', render);

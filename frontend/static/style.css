@@ -324,7 +324,7 @@ body:not([data-page="0"]) .scrollable-text {
 }
 
 .sources-btn {
-    display: none; /* Initially hidden */
+    display: none; /* Hidden by default */
     padding: 8px 18px;
     border-radius: 12px;
     background: #fff;
@@ -336,8 +336,8 @@ body:not([data-page="0"]) .scrollable-text {
     transition: all 0.3s ease;
 }
 
-/* Show when not on first page */
-body:not([data-page="0"]) .sources-btn {
+/* Show only on topic research page */
+body[data-page="2"] .sources-btn {
     display: inline-block;
 }
 .sources-btn:active {
