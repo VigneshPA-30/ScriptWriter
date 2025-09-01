@@ -2,6 +2,8 @@
 
 ScriptWriter is an AI-powered tool that helps content creators generate viral video scripts effortlessly. It uses Google's Gemini model through a multi-agent system to automate research, topic ideation, hook creation, and script writing. Whether you're a YouTuber, TikToker, or social media content creator, ScriptWriter streamlines your content creation process.
 
+![ScriptWriter Demo](ScriptWriter.gif)
+
 ## ✨ Features
 
 - 🎯 **Niche Selection**: Customize content for your specific niche
