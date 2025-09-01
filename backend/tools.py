@@ -1,12 +1,12 @@
 from agents import function_tool, Agent ,Runner
 from googlesearch import search
-from .prompts import search_prompt
+from prompts import search_prompt
 import requests
 from bs4 import BeautifulSoup
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 from urllib.parse import urlparse, parse_qs
 import asyncio
-from .models import gemini_model
+from models import gemini_model
 import requests
 import time
 

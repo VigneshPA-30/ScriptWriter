@@ -1,9 +1,9 @@
-from agents import Agent, Runner , trace 
-from .prompts import research_prompt,topic_research_prompt,script_prompt,hook_prompt
-from .tools import search_web, get_search_agent_tool,youtube_transcript_summary_tool
+from agents import Agent, Runner, trace
+from prompts import research_prompt,topic_research_prompt,script_prompt,hook_prompt
+from tools import search_web, get_search_agent_tool,youtube_transcript_summary_tool
 from dotenv import load_dotenv
-from .models import gemini_model
-from .output_format import ResearchOutputList
+from models import gemini_model
+from output_format import ResearchOutputList
 from typing import List
 import asyncio
 import json

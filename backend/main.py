@@ -1,17 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from .utils import set_user_niche
+from utils import set_user_niche
 import uvicorn
 
 # Import the refactored agent functions and Pydantic models
-from .agents import (
+from ScriptAgents import (
     get_topic_ideas,
     research_topic,
     generate_hook,
     generate_script,
 )
-from .output_format import ResearchOutputList
+from output_format import ResearchOutputList
 
 # Initialize FastAPI app
 app = FastAPI(

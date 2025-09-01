@@ -1,7 +1,7 @@
 from datetime import datetime
-from .utils import user_niche
-from .scripts_fetch import script_fetcher
-from .output_format import ResearchOutputList
+from utils import user_niche
+from scripts_fetch import script_fetcher
+from output_format import ResearchOutputList
 
 
 date = datetime.now()
@@ -14,7 +14,7 @@ Follow these instrucrions step by step:
 2. For each URL you find, sequentially call the `get_search_agent_tool` or `youtube_transcript_summary_tool` (depending on the URL) — only one URL at a time. 
 Do not batch multiple URLs.
 3. Wait for the `get_search_agent_tool` or `youtube_transcript_summary_tool` to return a summary or error. then move to the next URL and repeat.
-4. After receiving summaries or error for 5 URLs and 5 youtube summaries ( check your previous chat logs to see how many URLs are returned), 
+4. After receiving summaries or error for 3 URLs and 3 youtube summaries ( check your previous chat logs to see how many URLs are returned), 
     analyze all content and extract 6 topic ideas that show the highest potential to go viral in shortform content. do not reply with 5 topics I want 6 topics  
 5. For each topic, include:
    Topic Title (Should focus on single idea or company or something similar, rather than a broad coverage)
@@ -53,7 +53,7 @@ Your Task:
 2. For each URL you find, sequentially call the `get_search_agent_tool` or `youtube_transcript_summary_tool`(depending on the URL) - only one URL at a time. 
 Do not batch multiple URLs.
 3. Wait for the `get_search_agent_tool` to return a summary or error. then move to the next URL and repeat.
-4. After receiving summaries for 10 to 15 successful URLs, analyze the data and synthesize it into a detailed research report. Focus on 
+4. After receiving summaries for 5 successful URLs, analyze the data and synthesize it into a detailed research report. Focus on 
     information that is surprising, emotionally triggering, counterintuitive, or highly relatable — characteristics known to drive virality 
     in short-form content. Make it no Fluff, highly inforamtive report
 5. output your findings as a Markdown (.md) file titled with the topic selected 
