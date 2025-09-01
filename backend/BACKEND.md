@@ -8,14 +8,14 @@ The backend is designed as an asynchronous pipeline of specialized AI agents. Gi
 
 ## Core Functionality
 
-The heart of the backend is a sequential, multi-agent workflow defined in `agents.py`. Each agent has a specific role and passes its output to the next agent in the chain.
+The heart of the backend is a sequential, multi-agent workflow defined in `ScriptAgents.py`. Each agent has a specific role and passes its output to the next agent in the chain.
 
 ### The Agent Pipeline
 
 1.  **Research Agent (`research-bot`)**:
     -   **Purpose**: To discover potentially viral content ideas within the user's specified niche.
-    -   **Process**: It uses a `search_web` tool to find trending articles and content. It then uses a sub-agent (`get_search_agent_tool`) to summarize the content of each URL.
-    -   **Output**: A list of 6 distinct topic ideas with a justification for jejich viral potential.
+    -   **Process**: It uses tools like `search_web`, `get_search_agent_tool`, and `youtube_transcript_summary_tool` to find and summarize trending content.
+    -   **Output**: A list of 6 distinct topic ideas with a justification for their viral potential.
 
 2.  **Topic Research Agent (`Topic-Research_Bot`)**:
     -   **Purpose**: To conduct in-depth research on a single, selected topic from the previous stage.
@@ -34,19 +34,21 @@ The heart of the backend is a sequential, multi-agent workflow defined in `agent
 
 ## Key Components
 
-*   `agents.py`: The main entry point for the backend. It defines the agents, orchestrates the pipeline, and manages the flow of data between them.
-*   `prompts.py`: This file is crucial as it contains the detailed instructions (prompts) that define the personality, goals, and step-by-step processes for each AI agent.
-*   `tools.py` (inferred): Provides the agents with their capabilities, such as `search_web` and `get_page_content`. These are the external functions the agents can call.
-*   `models.py` (inferred): Configures and initializes the connection to the Gemini LLM.
-*   `scripts_fetch.py` (inferred): Contains the `script_fetcher` function, which loads example scripts to provide context and style guidance to the hook and scriptwriting agents.
+*   `ScriptAgents.py`: The main entry point for the backend. It defines the agents, orchestrates the pipeline, and manages the flow of data between them.
+*   `prompts.py`: Contains detailed instructions (prompts) that define the personality, goals, and step-by-step processes for each AI agent.
+*   `tools.py`: Provides the agents with their capabilities, such as `search_web`, `get_page_content`, and `youtube_transcript_summary_tool`. These are the external functions the agents can call.
+*   `models.py`: Configures and initializes the connection to the Gemini LLM.
+*   `scripts_fetch.py`: Contains the `script_fetcher` function, which loads example scripts to provide context and style guidance to the hook and scriptwriting agents.
+*   `output_format.py`: Defines the Pydantic models for structured outputs, such as `ResearchOutputList`.
+*   `utils.py`: Includes utility functions like `set_user_niche` to manage user preferences.
 
 ## Workflow
 
-The end-to-end process is triggered by a single function call to `agents_for_research(user_niche)`.
+The end-to-end process is triggered by a single function call to `get_topic_ideas(user_niche)` in `ScriptAgents.py`.
 
 1.  A user-provided `niche` (e.g., "AI in Healthcare") is passed to the function.
 2.  The **Research Agent** is invoked to find 6 viral topic ideas related to the niche.
-3.  A topic is selected from the list. (Note: Currently, the `choice_selector` function in `agents.py` is hardcoded to select the 3rd topic. This is a placeholder for future user interaction).
+3.  A topic is selected from the list. (Note: Currently, the `choice_selector` function in `ScriptAgents.py` is hardcoded to select the 3rd topic. This is a placeholder for future user interaction).
 4.  The **Topic Research Agent** receives the selected topic and generates a detailed report.
 5.  The **Hook Agent** uses this report to craft a catchy hook.
 6.  The **Script Agent** receives both the hook and the report to write the final script.
@@ -79,12 +81,9 @@ The end-to-end process is triggered by a single function call to `agents_for_res
 
 To run the full script generation pipeline, execute the `main.py` script from the project root.
 
-
 ## Future Improvements
 
 -   **Implement User Choice**: Replace the hardcoded `choice_selector` with a mechanism for the user to select their preferred topic.
 -   **Robust Logging**: Replace `print()` statements with a structured logging library (e.g., `logging`) for better monitoring and debugging.
 -   **Error Handling**: Enhance error handling within the agent pipeline to gracefully manage failures from API calls or tool usage.
--   **Configuration Management**: As noted in `agents.py`, agent configurations could be moved to a separate file for better organization and easier modification.
-
----
+-   **Configuration Management**: As noted in `ScriptAgents.py`, agent configurations could be moved to a separate file for better organization and easier modification.
