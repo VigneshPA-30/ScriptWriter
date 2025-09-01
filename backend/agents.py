@@ -77,68 +77,72 @@ async def get_topic_ideas(user_niche: str) :
     """
     Runs the research agent to generate a list of topic ideas for a given niche.
     """
-    # print("Starting research for topic ideas...")
-    # with trace("Topic search"):
-    #     result = await run_with_retry(
-    #         starting_agent=research_agent,
-    #         input=f"Topics that will go viral in niche {user_niche}, If you encounter any technical difficulty while calling a tool tell me in detail what problem you faced",
-    #         max_turns=25,
-    #     )
-    # print(f"Finished research for topic Ideas with type {type(result.final_output)}")
+    print("Starting research for topic ideas...")
+    with trace("Topic search"):
+        result = await run_with_retry(
+            starting_agent=research_agent,
+            input=f"Topics that will go viral in niche {user_niche}, If you encounter any technical difficulty while calling a tool tell me in detail what problem you faced",
+            max_turns=25,
+        )
+    print(f"Finished research for topic Ideas with type {type(result.final_output)}")
+    return result.final_output
 
-    test_op = """   1. TOPIC : <topic of selection> REASON:<reason for selection>
-                    2. TOPIC : <topic of selection> REASON:<reason for selection>
-                    3. TOPIC : <topic of selection> REASON:<reason for selection>
-                    4. TOPIC : <topic of selection> REASON:<reason for selection>
-                    5. TOPIC : <topic of selection> REASON:<reason for selection>
-                    6. TOPIC : <topic of selection> REASON:<reason for selection>"""
+    # test_op = """   1. TOPIC : <topic of selection> REASON:<reason for selection>
+    #                 2. TOPIC : <topic of selection> REASON:<reason for selection>
+    #                 3. TOPIC : <topic of selection> REASON:<reason for selection>
+    #                 4. TOPIC : <topic of selection> REASON:<reason for selection>
+    #                 5. TOPIC : <topic of selection> REASON:<reason for selection>
+    #                 6. TOPIC : <topic of selection> REASON:<reason for selection>"""
 
-    return test_op
+    # return test_op
 
 async def research_topic(topic: str, topic_selected:int) -> str:
     """
     Runs the topic research agent to generate a detailed report on a given topic.
     """
-    # print(f"Starting in-depth research for topic: {topic}")
-    # if topic_selected ==0:topic_selected = random.randint(1,6)
-    # with trace("Topic research"):
-    #     result = await run_with_retry(
-    #         starting_agent=topic_research_agent,
-    #         input=f"Do in-depth research only for the topic number : {topic_selected} only : {topic}. The user has selected the topic number : {topic_selected}, so research only for that topic",
-    #         max_turns=25,
-    #     )
-    # print(f"Finished in-depth research for topic number {topic_selected} with type {type(result.final_output)}")
-    test_op = """ I am Iron man """ *100
-    return test_op
+    print(f"Starting in-depth research for topic: {topic}")
+    if topic_selected ==0:topic_selected = random.randint(1,6)
+    with trace("Topic research"):
+        result = await run_with_retry(
+            starting_agent=topic_research_agent,
+            input=f"Do in-depth research only for the topic number : {topic_selected} only : {topic}. The user has selected the topic number : {topic_selected}, so research only for that topic",
+            max_turns=25,
+        )
+    print(f"Finished in-depth research for topic number {topic_selected} with type {type(result.final_output)}")
+    return result.final_output
+    # test_op = """ I am Iron man """ *100
+    # return test_op
 
 async def generate_hook(research_report: str) -> str:
     """
     Generates a hook based on a research report.
     """
-    # print("Starting hook generation...")
-    # with trace("Hook generation"):
-    #     result = await run_with_retry(
-    #         starting_agent=hook_agent,
-    #         input=f"here is the report you can use to create hook \n {research_report}",
-    #         max_turns=25,
-    #     )
-    # print("Finished hook generation.")
+    print("Starting hook generation...")
+    with trace("Hook generation"):
+        result = await run_with_retry(
+            starting_agent=hook_agent,
+            input=f"here is the report you can use to create hook \n {research_report}",
+            max_turns=25,
+        )
+    print("Finished hook generation.")
+    return result.final_output
 
-    test_op= " This is the Hook"
-    return test_op
+    # test_op= " This is the Hook"
+    # return test_op
 
 async def generate_script(hook: str, research_report: str) -> str:
     """
     Generates a full script based on a hook and a research report.
     """
-    # print("Starting script generation...")
-    # with trace("Script generation"):
-    #     result = await run_with_retry(
-    #         starting_agent=script_agent,
-    #         input=f"Use this Hook to create the script --\n {hook}\n\n Use this report of information for the Script:\n{research_report} ",
-    #         max_turns=25,
-    #     )
-    # print("Finished script generation.")
+    print("Starting script generation...")
+    with trace("Script generation"):
+        result = await run_with_retry(
+            starting_agent=script_agent,
+            input=f"Use this Hook to create the script --\n {hook}\n\n Use this report of information for the Script:\n{research_report} ",
+            max_turns=25,
+        )
+    print("Finished script generation.")
+    return result.final_output
 
-    test_op = "This is the script" * 10
-    return test_op
+    # test_op = "This is the script" * 10
+    # return test_op

@@ -30,12 +30,12 @@ Key Instructions:
 Today's date and time is {date.strftime("%x")}
 
 YOUR FINAL RESPONSE MUST BE STRUCTURED EXACTLY AS FOLLOWS, ALWAYS FOLLOW THIS  FORMAT :
-{{1. TOPIC : <topic of selection> REASON:<reason for selection>}}
-{{2. TOPIC : <topic of selection> REASON:<reason for selection>}}
-{{3. TOPIC : <topic of selection> REASON:<reason for selection>}}
-{{4. TOPIC : <topic of selection> REASON:<reason for selection>}}
-{{5. TOPIC : <topic of selection> REASON:<reason for selection>}}
-{{6. TOPIC : <topic of selection> REASON:<reason for selection>}}
+1. TOPIC : <topic of selection> \nREASON:<reason for selection>
+2. TOPIC : <topic of selection> \nREASON:<reason for selection>
+3. TOPIC : <topic of selection> \nREASON:<reason for selection>
+4. TOPIC : <topic of selection> \nREASON:<reason for selection>
+5. TOPIC : <topic of selection> \nREASON:<reason for selection>
+6. TOPIC : <topic of selection> \nREASON:<reason for selection>
 
 """
 

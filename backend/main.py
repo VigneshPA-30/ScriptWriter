@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from .utils import set_user_niche
 import uvicorn
 
 # Import the refactored agent functions and Pydantic models
@@ -71,6 +72,7 @@ def read_root():
 @app.post("/research/topics", response_model=TextResponse, summary="Get Topic Ideas")
 async def api_get_topic_ideas(request: NicheRequest):
     """Takes a user-defined niche and returns a list of 6 potential viral topic ideas."""
+    set_user_niche(request.niche)
     topic = await get_topic_ideas(request.niche)
     return {"content": topic}
 
