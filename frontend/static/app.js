@@ -1,7 +1,7 @@
 // ScriptWriter SPA logic
 const PAGES = ["niche", "find-topic", "topic-research", "hook-generation", "full-script"];
 const HEADINGS = ["find-topic", "topic-research", "hook-generation", "full-script"];
-const API_URL = 'http://127.0.0.1:8000'; // Backend API URL
+const API_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000'; // Backend API URL
 
 let state = {
     page: 0, // 0: niche, 1: find-topic, 2: topic-research, 3: hook-generation, 4: full-script

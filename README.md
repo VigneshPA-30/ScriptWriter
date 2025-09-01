@@ -18,9 +18,15 @@ ScriptWriter is an AI-powered tool that helps content creators generate viral vi
 
 ### Prerequisites
 
+#### Option 1: Local Installation
 - Python 3.12 or higher
 - uv (Python package manager)
-- Node.js and npm (for frontend development)
+- Git
+- Google Gemini API key
+
+#### Option 2: Docker Installation
+- Docker
+- Docker Compose
 - Git
 - Google Gemini API key
 
@@ -32,22 +38,49 @@ git clone https://github.com/VigneshPA-30/ScriptWriter.git
 cd ScriptWriter
 ```
 
-2. Set up Python virtual environment using uv
+2. Choose your installation method:
+
+#### Option 1: Local Installation
+
+1. Set up Python virtual environment using uv
 ```bash
 uv venv
 source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
 ```
 
-3. Install Python dependencies with uv
+2. Install Python dependencies with uv
 ```bash
 # Install dependencies from pyproject.toml
 uv pip install .
 ```
 
-4. Set up environment variables
+3. Set up environment variables in `.env` file
 ```bash
- GEMINI_API_KEY="your-api-key-here"  
+GEMINI_API_KEY="your-api-key-here"
+YOUTUBE_API_KEY="your-youtube-api-key-here"
 ```
+
+#### Option 2: Docker Installation
+
+1. Copy the example environment file
+```bash
+cp .env.example .env
+```
+
+2. Add your API keys to the `.env` file
+```bash
+GEMINI_API_KEY="your-api-key-here"
+YOUTUBE_API_KEY="your-youtube-api-key-here"
+```
+
+3. Build and run with Docker Compose
+```bash
+docker-compose up --build
+```
+
+The application will be available at:
+- Frontend: http://localhost:8001
+- Backend API: http://localhost:8000
 
 ### Running the Application
 
@@ -110,7 +143,48 @@ ScriptWriter/
 └── pyproject.toml        # Project dependencies and configuration
 ```
 
-## 📚 API Documentation
+## � Docker Usage
+
+When running with Docker, the application is split into two services:
+
+1. **Frontend Service**
+   - Runs on port 8001
+   - Handles the user interface
+   - Auto-reloads on code changes
+
+2. **Backend Service**
+   - Runs on port 8000
+   - Provides the API endpoints
+   - Auto-reloads on code changes
+
+### Docker Commands
+
+Start the application:
+```bash
+docker-compose up
+```
+
+Start in detached mode:
+```bash
+docker-compose up -d
+```
+
+Rebuild containers:
+```bash
+docker-compose up --build
+```
+
+Stop the application:
+```bash
+docker-compose down
+```
+
+View logs:
+```bash
+docker-compose logs -f
+```
+
+## �📚 API Documentation
 
 Once the backend server is running, you can access the API documentation at:
 - Swagger UI: `http://localhost:8000/docs`
